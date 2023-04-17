@@ -1,7 +1,7 @@
 <?php require_once('./database/connection.php'); ?>
 
 <?php
-if(isset($_GET['id']) && !empty($_GET['id'])) {
+if (isset($_GET['id']) && !empty($_GET['id'])) {
     $id = htmlspecialchars($_GET['id']);
     $sql = "SELECT * FROM `users` WHERE `id` = $id";
     $result = $conn->query($sql);
@@ -11,6 +11,7 @@ if(isset($_GET['id']) && !empty($_GET['id'])) {
 }
 
 $name = $user['name'];
+$father_name = $user['father_name'];
 $email = $user['email'];
 $error = $success = '';
 
@@ -20,19 +21,28 @@ if (isset($_POST['submit'])) {
     // echo "</pre>";
 
     $name = htmlspecialchars($_POST['name']);
+    $father_name = htmlspecialchars($_POST['father_name']);
     $email = htmlspecialchars($_POST['email']);
 
     if (empty($name)) {
         $error = 'Please provide your name!';
+    } elseif (empty($father_name)) {
+        $error = 'Please provide your father name!';
     } elseif (empty($email)) {
         $error = 'Please provide your email!';
     } else {
-        $sql = "UPDATE `users` SET `name` = '$name', `email` = '$email' WHERE `id` = $id
+        $sql = "SELECT * FROM `users` WHERE `email` = '$email' AND `id` != $id";
+        $result = $conn->query($sql);
+        if ($result->num_rows === 0) {
+            $sql = "UPDATE `users` SET `name` = '$name', `father_name` = '$father_name', `email` = '$email' WHERE `id` = $id
         ";
-        if($conn->query($sql)) {
-            $success = 'Magic has been spelled!';
+            if ($conn->query($sql)) {
+                $success = 'Magic has been spelled!';
+            } else {
+                $error = 'Magic has failed to spell!';
+            }
         } else {
-            $error = 'Magic has failed to spell!';
+            $error = 'Email alreadt exists!';
         }
     }
 }
@@ -81,7 +91,7 @@ if (isset($_POST['submit'])) {
 
                                 if (!empty($success)) { ?>
                                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                    <?php echo $success; ?>
+                                        <?php echo $success; ?>
                                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                     </div>
                                 <?php
@@ -93,6 +103,11 @@ if (isset($_POST['submit'])) {
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name</label>
                                 <input type="text" class="form-control" name="name" id="name" value="<?php echo $name; ?>" placeholder="Enter your Name!">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="father_name" class="form-label">Father Name</label>
+                                <input type="text" class="form-control" name="father_name" id="father_name" value="<?php echo $father_name; ?>" placeholder="Enter your Father Name!">
                             </div>
 
                             <div class="mb-3">

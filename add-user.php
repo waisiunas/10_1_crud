@@ -1,7 +1,7 @@
 <?php require_once('./database/connection.php'); ?>
 
 <?php
-$name = $email = $error = $success = '';
+$name = $father_name = $email = $error = $success = '';
 
 if (isset($_POST['submit'])) {
     // echo "<pre>";
@@ -10,17 +10,26 @@ if (isset($_POST['submit'])) {
 
     $name = htmlspecialchars($_POST['name']);
     $email = htmlspecialchars($_POST['email']);
+    $father_name = htmlspecialchars($_POST['father_name']);
 
     if (empty($name)) {
         $error = 'Please provide your name!';
+    } elseif (empty($father_name)) {
+        $error = 'Please provide your father name!';
     } elseif (empty($email)) {
         $error = 'Please provide your email!';
     } else {
-        $sql = "INSERT INTO `users`(`name`, `email`) VALUES ('$name', '$email')";
-        if($conn->query($sql)) {
-            $success = 'Magic has been spelled!';
+        $sql = "SELECT * FROM `users` WHERE `email` = '$email'";
+        $result = $conn->query($sql);
+        if($result->num_rows === 0) {
+            $sql = "INSERT INTO `users`(`name`, `father_name`, `email`) VALUES ('$name', '$father_name', '$email')";
+            if($conn->query($sql)) {
+                $success = 'Magic has been spelled!';
+            } else {
+                $error = 'Magic has failed to spell!';
+            }
         } else {
-            $error = 'Magic has failed to spell!';
+            $error = 'Email alreadt exists!';
         }
     }
 }
@@ -81,6 +90,11 @@ if (isset($_POST['submit'])) {
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name</label>
                                 <input type="text" class="form-control" name="name" id="name" value="<?php echo $name; ?>" placeholder="Enter your Name!">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="father_name" class="form-label">Father Name</label>
+                                <input type="text" class="form-control" name="father_name" id="father_name" value="<?php echo $father_name; ?>" placeholder="Enter your Father Name!">
                             </div>
 
                             <div class="mb-3">
