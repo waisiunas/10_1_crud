@@ -34,8 +34,7 @@ if (isset($_POST['submit'])) {
         $sql = "SELECT * FROM `users` WHERE `email` = '$email' AND `id` != $id";
         $result = $conn->query($sql);
         if ($result->num_rows === 0) {
-            $sql = "UPDATE `users` SET `name` = '$name', `father_name` = '$father_name', `email` = '$email' WHERE `id` = $id
-        ";
+            $sql = "UPDATE `users` SET `name` = '$name', `father_name` = '$father_name', `email` = '$email' WHERE `id` = $id";
             if ($conn->query($sql)) {
                 $success = 'Magic has been spelled!';
             } else {
